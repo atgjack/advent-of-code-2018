@@ -16,7 +16,7 @@ pub fn find_first_repeated_frequency(file: &'static str) -> isize {
 }
 
 #[inline]
-fn lines_to_iter(file: &'static str) -> impl Iterator<Item=isize> + Clone {
+pub fn lines_to_iter(file: &'static str) -> impl Iterator<Item=isize> + Clone {
   file.lines()
     .flat_map(|l| l.to_string().parse().ok())
 }
