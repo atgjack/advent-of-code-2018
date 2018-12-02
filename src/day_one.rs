@@ -18,8 +18,7 @@ pub fn find_first_repeated_frequency(file: &'static str) -> isize {
 #[inline]
 fn lines_to_iter(file: &'static str) -> impl Iterator<Item=isize> + Clone {
   file.lines()
-    .map(|l| l.to_string().parse())
-    .filter(|r| r.ok())
+    .flat_map(|l| l.to_string().parse().ok())
 }
 
 #[inline]
@@ -33,7 +32,7 @@ mod tests {
 
   #[test]
   fn can_sum_all_frequency_changes() {
-    let test_file = include_str!("../test_inputs/day_one/simple_sum.txt");
+    let test_file = include_str!("test_inputs/day_one/simple_sum.txt");
     let actual = find_final_freqeuency(test_file);
 
     assert_eq!(actual, 350);
@@ -42,7 +41,7 @@ mod tests {
 
   #[test]
   fn can_find_first_repeated_frequency() {
-    let test_file = include_str!("../test_inputs/day_one/simple_repeat.txt");
+    let test_file = include_str!("test_inputs/day_one/simple_repeat.txt");
     let actual = find_first_repeated_frequency(test_file);
 
     assert_eq!(actual, 3);
@@ -50,7 +49,7 @@ mod tests {
 
   #[test]
   fn can_find_first_repeated_frequency_with_looping() {
-    let test_file = include_str!("../test_inputs/day_one/looping_repeat.txt");
+    let test_file = include_str!("test_inputs/day_one/looping_repeat.txt");
     let actual = find_first_repeated_frequency(test_file);
 
     assert_eq!(actual, 0);
