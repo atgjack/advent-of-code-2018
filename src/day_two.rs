@@ -1,42 +1,47 @@
 use std::collections::HashMap;
 
 pub fn calculate_checksum(file: &'static str) -> usize {
-  let num_doubles = file.lines()
-    .filter(count_dupes(2))
+  let counts: Vec<Vec<usize>> = file.lines()
+    .map(count_dupes())
+    .collect();
+  let num_doubles = counts.iter()
+    .filter(|v| v.contains(&2))
     .count();
-  let num_tiples = file.lines()
-    .filter(count_dupes(3))
+  let num_triples = counts.iter()
+    .filter(|v| v.contains(&3))
     .count();
 
-  num_doubles * num_tiples
+  num_doubles * num_triples
 }
 
 pub fn calcuate_diff(file: &'static str) -> String {
   file.lines()
-    .find_map(|l1| {
+    .enumerate()
+    .find_map(|(index, l1)| {
       file.lines()
+        .skip(index + 1)
         .find(has_one_diff(l1))
         .map(find_similar(l1))
     }).unwrap()
 }
 
 #[inline]
-fn count_dupes(num: usize) -> impl FnMut(&&str) -> bool {
-  move |line| {
+fn count_dupes() -> impl FnMut(&str) -> Vec<usize> {
+  |line| {
     line.chars()
       .fold(HashMap::with_capacity(26), |mut map, c| { *map.entry(c).or_insert(0) += 1; map })
       .values()
-      .any(|&x| x == num)
+      .map(|&v| v as usize)
+      .collect()
   }
 }
 
 #[inline]
 fn has_one_diff(l1: &'static str) -> impl FnMut(&&str) -> bool {
   move |l2| {
-    let chars: Vec<char> = l2.chars().collect();
     l1.chars()
-      .enumerate()
-      .filter(|(index, c)| *c != chars[*index])
+      .zip(l2.chars())
+      .filter(|(c1, c2)| c1 != c2)
       .count() == 1
   }
 }
@@ -44,12 +49,11 @@ fn has_one_diff(l1: &'static str) -> impl FnMut(&&str) -> bool {
 #[inline]
 fn find_similar(l1: &'static str) -> impl FnOnce(&str) -> String {
   move |l2| {
-    let chars: Vec<char> = l2.chars().collect();
     l1.chars()
-      .enumerate()
-      .filter(|(index, c)| *c == chars[*index])
-      .map(|(_, c)| c)
-      .collect::<String>()
+      .zip(l2.chars())
+      .filter(|(c1, c2)| c1 == c2)
+      .map(|(c, _)| c)
+      .collect()
   }
 }
 
