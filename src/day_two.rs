@@ -1,17 +1,9 @@
-use std::collections::HashMap;
-
 pub fn calculate_checksum(file: &'static str) -> usize {
-  let counts: Vec<Vec<usize>> = file.lines()
+  file.lines()
     .map(count_dupes())
-    .collect();
-  let num_doubles = counts.iter()
-    .filter(|v| v.contains(&2))
-    .count();
-  let num_triples = counts.iter()
-    .filter(|v| v.contains(&3))
-    .count();
-
-  num_doubles * num_triples
+    .fold([0usize, 0usize], fold_dupe_counts())
+    .iter()
+    .product()
 }
 
 pub fn calcuate_diff(file: &'static str) -> String {
@@ -26,14 +18,20 @@ pub fn calcuate_diff(file: &'static str) -> String {
 }
 
 #[inline]
-fn count_dupes() -> impl FnMut(&str) -> Vec<usize> {
+fn count_dupes() -> impl FnMut(&str) -> [usize; 26] {
   |line| {
     line.chars()
-      .fold(HashMap::with_capacity(26), |mut map, c| { *map.entry(c).or_insert(0) += 1; map })
-      .values()
-      .map(|&v| v as usize)
-      .collect()
+      .map(|c| c as usize - 'a' as usize)
+      .fold([0usize; 26], |mut arr, i| { arr[i] += 1; arr })
   }
+}
+
+#[inline]
+fn fold_dupe_counts() -> impl FnMut([usize; 2], [usize; 26]) -> [usize; 2] {
+  |r, n| [ 
+    r[0] + n.contains(&2) as usize, 
+    r[1] + n.contains(&3) as usize
+  ]
 }
 
 #[inline]
