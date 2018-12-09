@@ -82,14 +82,13 @@ mod tests {
   fn can_compare_chars() {
     let char1 = 'C';
     let char2 = 'c';
-    let char3 = 'c';
-    let char4 = 'J';
+    let char3 = 'J';
 
     assert!(letters_explode(char1, char2));
     assert!(letters_explode(char2, char1));
 
+    assert!(!letters_explode(char1, char1));
+    assert!(!letters_explode(char1, char3));
     assert!(!letters_explode(char2, char3));
-    assert!(!letters_explode(char3, char4));
-    assert!(!letters_explode(char1, char4));
   }
 }
