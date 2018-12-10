@@ -107,7 +107,6 @@ mod tests {
     assert_eq!(actual, 17);
   }
 
-
   #[test]
   fn can_find_safest_region_area() {
     let test_file = include_str!("test_inputs/day_six/simple_coordinates.txt");
